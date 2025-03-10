@@ -6,6 +6,7 @@ const cors = require("cors");
 // Import Routes
 const authRoutes = require("./routes/auth");
 const eventRoutes = require("./routes/events");
+const userRoutes = require("./routes/user");
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(cors());
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/users", userRoutes);
 
 // Connect to MongoDB Atlas
 mongoose
