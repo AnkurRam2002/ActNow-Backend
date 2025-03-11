@@ -7,6 +7,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const eventRoutes = require("./routes/events");
 const userRoutes = require("./routes/user");
+const passRoutes = require("./routes/pass");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(cors());
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/pass", passRoutes);
 
 // Connect to MongoDB Atlas
 mongoose
