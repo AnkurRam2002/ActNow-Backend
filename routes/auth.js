@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const sendEmail = require('../middleware/emailService');
@@ -8,9 +8,8 @@ const sendEmail = require('../middleware/emailService');
 // User registration endpoint
 router.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
     try {
-        const user = new User({ username, email, password: hashedPassword });
+        const user = new User({ username, email, password });
         await user.save();
         await sendEmail(email, "Welcome to ActNow", `Hello ${username},\n\nThank you for registering on our platform. We're excited to have you on board.\n\nBest Wishes,\nActNow Team`);
         res.status(201).json({ message: 'User registered successfully' });
