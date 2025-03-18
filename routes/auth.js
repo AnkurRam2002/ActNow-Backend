@@ -7,9 +7,15 @@ const sendEmail = require('../middleware/emailService');
 
 // User registration endpoint
 router.post('/register', async (req, res) => {
-    const { username, email, password } = req.body;
+    const { username, email, password, phone, city } = req.body; // Accept phone and city
     try {
-        const user = new User({ username, email, password });
+        const user = new User({ 
+            username, 
+            email, 
+            password, 
+            phoneNumber: phone, // Store phone as phoneNumber
+            city
+        });
         await user.save();
         await sendEmail(email, "Welcome to ActNow", `Hello ${username},\n\nThank you for registering on our platform. We're excited to have you on board.\n\nBest Wishes,\nActNow Team`);
         res.status(201).json({ message: 'User registered successfully' });
@@ -17,6 +23,7 @@ router.post('/register', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+
 
 // User login endpoint
 router.post('/login', async (req, res) => {

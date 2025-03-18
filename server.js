@@ -19,7 +19,7 @@ app.use(cors());
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/pass", passRoutes);
+app.use("/api", passRoutes);
 
 // Connect to MongoDB Atlas
 mongoose
