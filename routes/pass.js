@@ -12,7 +12,7 @@ router.post('/forgot-password', async (req, res) => {
 
   try {
     const otp = Math.floor(100000 + Math.random() * 900000); 
-    otpStore[email] = { otp, expiresAt: Date.now() + 1 * 60 * 1000 };
+    otpStore[email] = { otp, expiresAt: Date.now() + 10 * 60 * 1000 };
     console.log(otpStore[email]);
     await sendEmail(email, "Password Reset OTP", `You are recieving this email because you have requested an otp to change your password. Your OTP is: ${otp}`);
 
