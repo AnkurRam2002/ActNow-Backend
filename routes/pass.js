@@ -27,7 +27,8 @@ router.post('/forgot-password', async (req, res) => {
       expiresAt: Date.now() + 10 * 60 * 1000 
     };
 
-    console.log(otpStore[identifier]);
+    console.log('OTP is', otpStore[identifier].otp)
+    console.log('Expires at', new Date(otpStore[identifier].expiresAt).toLocaleString());
 
     // Send OTP via Email or SMS
     if (email) {
@@ -54,6 +55,7 @@ router.post('/forgot-password', async (req, res) => {
 router.post('/reset-password', async (req, res) => {
   const { email, phoneNumber, otp, newPassword } = req.body;
   const identifier = email || phoneNumber;
+  console.log(identifier);
 
   try {
     // Check if OTP exists
