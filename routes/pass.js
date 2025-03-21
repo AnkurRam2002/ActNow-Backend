@@ -83,7 +83,7 @@ router.post('/reset-password', async (req, res) => {
     if (email) {
       query.email = email;
     } else if (phone) {
-      query.phone = phone;
+      query.phoneNumber = phone;
     }
 
     const user = await User.findOneAndUpdate(query, { password: hashedPassword });
