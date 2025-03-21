@@ -9,17 +9,17 @@ const otpStore = {};
 
 /* Forgot Password */
 router.post('/forgot-password', async (req, res) => {
-  const { email, phoneNumber } = req.body;
+  const { email, phone } = req.body;
 
   // Validate request: At least email or phone number should be provided
-  if (!email && !phoneNumber) {
+  if (!email && !phone) {
     return res.status(400).json({ message: "Email or phone number is required" });
   }
 
   try {
     // Generate OTP
     const otp = otpGenerator.generate(6, { upperCaseAlphabets: false, specialChars: false, lowerCaseAlphabets: false });
-    const identifier = email || phoneNumber;
+    const identifier = email || phone;
 
     // Store OTP with expiration time of 10 minutes
     otpStore[identifier] = { 
@@ -41,7 +41,7 @@ router.post('/forgot-password', async (req, res) => {
 
     } else {
       await sendSMS(
-        phoneNumber,
+        phone,
         `Your password reset OTP is: ${otp}. Valid for 10 minutes.`
       );
       return res.status(200).json({ message: "OTP sent to your phone" });
@@ -53,8 +53,8 @@ router.post('/forgot-password', async (req, res) => {
 
 /* Reset Password */
 router.post('/reset-password', async (req, res) => {
-  const { email, phoneNumber, otp, newPassword } = req.body;
-  const identifier = email || phoneNumber;
+  const { email, phone, otp, newPassword } = req.body;
+  const identifier = email || phone;
   console.log(identifier);
 
   try {
@@ -82,8 +82,8 @@ router.post('/reset-password', async (req, res) => {
     const query = {};
     if (email) {
       query.email = email;
-    } else if (phoneNumber) {
-      query.phoneNumber = phoneNumber;
+    } else if (phone) {
+      query.phone = phone;
     }
 
     const user = await User.findOneAndUpdate(query, { password: hashedPassword });
