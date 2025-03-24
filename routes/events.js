@@ -129,7 +129,7 @@ router.post('/create', auth , async (req, res) => {
       const user = await User.findById(req.user.userId);
       if (!user) return res.status(404).json({ error: 'User not found.' });
 
-      user.eventsRegistered.push(id);
+      user.eventsRegistered.push(req.params.id);
       await user.save();
   
       res.json({ message: 'User added to event successfully.' });
