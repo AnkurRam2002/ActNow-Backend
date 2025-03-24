@@ -1,5 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const Event = require('../models/event');
+const auth = require('../middleware/authMiddleware');
+const User = require("../models/user");
 
 // Get all events
 router.get('/', async (req, res) => {
@@ -37,14 +40,14 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create new event
-router.post('/create', async (req, res) => {
-  const { title, description, date, location, requiredSkills, volunteersNeeded } = req.body;
+router.post('/create', auth , async (req, res) => {
+  const { name, description, date, location, requiredSkills, volunteersNeeded } = req.body;
 
   const skillsArray = Array.isArray(requiredSkills) ? requiredSkills : (requiredSkills ? [requiredSkills] : []);
 
     try {
       const event = new Event({
-        title,
+        name,
         description,
         date,
         location,
@@ -60,7 +63,7 @@ router.post('/create', async (req, res) => {
   });
 
   // Update event details
-  router.put('/:id', async (req, res) => {
+  router.put('/:id', auth , async (req, res) => {
     try {
       const { title, description, date, location, requiredSkills, volunteersNeeded } = req.body;
 
@@ -103,11 +106,35 @@ router.post('/create', async (req, res) => {
   // Get event participants
   router.get('/:id/participants', async (req, res) => {
     try {
-      const event = await Event.findById(req.params.id).populate('participants', 'username email');
+      const event = await Event.findById(req.params.id).populate('volunteersAssigned', 'username');
       if (!event) return res.status(404).json({ error: 'Event not found.' });
-      res.json(event.participants);
+      res.json(event.volunteersAssigned);
     } catch (error) {
       res.status(500).json({ error: 'Failed to fetch participants.' });
+    }
+  });
+
+  router.post('/:id/participate', auth, async (req, res) => {
+    try {
+      const event = await Event.findById(req.params.id);
+      if (!event) return res.status(404).json({ error: 'Event not found.' });
+  
+      if (event.volunteersAssigned.includes(req.user.userId)) {
+        return res.status(400).json({ error: 'User already participating in event.' });
+      }
+  
+      event.volunteersAssigned.push(req.user.userId);
+      await event.save();
+
+      const user = await User.findById(req.user.userId);
+      if (!user) return res.status(404).json({ error: 'User not found.' });
+
+      user.eventsRegistered.push(id);
+      await user.save();
+  
+      res.json({ message: 'User added to event successfully.' });
+    } catch (error) {
+      res.status(500).json({ error: 'Failed to add user to event.' });
     }
   });
 

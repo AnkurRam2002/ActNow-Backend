@@ -18,7 +18,7 @@ const auth = async (req, res, next) => {
       throw new Error('User not found');
     }
 
-    req.user = user;
+    req.user = decoded;
     next();
 
   } catch (error) {
