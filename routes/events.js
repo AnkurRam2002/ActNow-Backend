@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Event = require('../models/event.models');
 const auth = require('../middleware/authMiddleware');
-const User = require("../models/user");
+const User = require("../models/user.models");
 
 // Get all events
 router.get('/', async (req, res) => {
