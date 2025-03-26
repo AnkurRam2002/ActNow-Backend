@@ -1,6 +1,6 @@
 const cron = require("node-cron");
-const User = require("../models/user"); 
-const Event = require("../models/event"); 
+const User = require("../models/user.models"); 
+const Event = require("../models/event.models"); 
 
 // Schedule the job to run every day at midnight (0 0 * * *)
 cron.schedule("0 0 * * *", async () => {

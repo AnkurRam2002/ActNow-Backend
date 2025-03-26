@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Event = require('../models/event');
+const Event = require('../models/event.models');
 const auth = require('../middleware/authMiddleware');
 const User = require("../models/user");
 
@@ -11,10 +11,10 @@ router.get('/', async (req, res) => {
     const query = {
       ...(q && {
         $or: [
-          { title: { $regex: q, $options: 'i' } },
+          { name: { $regex: q, $options: 'i' } },
           { description: { $regex: q, $options: 'i' } },
           { location: { $regex: q, $options: 'i' } },
-          { organizer: { $regex: q, $options: 'i' } },
+          // { organizer: { $regex: q, $options: 'i' } },
           { requiredSkills: { $regex: q, $options: 'i' } }
         ]
       }),
@@ -65,14 +65,14 @@ router.post('/create', auth , async (req, res) => {
   // Update event details
   router.put('/:id', auth , async (req, res) => {
     try {
-      const { title, description, date, location, requiredSkills, volunteersNeeded } = req.body;
+      const { name, description, date, location, requiredSkills, volunteersNeeded } = req.body;
 
       const skillsArray = Array.isArray(requiredSkills) ? requiredSkills : (requiredSkills ? [requiredSkills] : []);
   
       const event = await Event.findOneAndUpdate(
         { _id: req.params.id, organizer: req.user.userId }, // Ensure only the creator can update
         {
-          title,
+          name,
           description,
           date,
           location,
