@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 require("dotenv").config();
-require("./middleware/cronJob");
+require("./helpers/cronJob");
 
 // Import Routes
 const authRoutes = require("./routes/auth");

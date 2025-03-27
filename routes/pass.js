@@ -2,8 +2,8 @@ const express = require('express');
 const User = require('../models/user.models'); 
 const router = express.Router();
 const bcrypt = require('bcryptjs');
-const sendEmail = require('../middleware/emailService');
-const sendSMS = require('../middleware/smsService');
+const sendEmail = require('../helpers/emailService');
+const sendSMS = require('../helpers/smsService');
 const otpGenerator = require('otp-generator');
 const otpStore = {}; 
 
