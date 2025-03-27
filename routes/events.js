@@ -68,6 +68,11 @@ router.post('/create', auth , async (req, res) => {
         volunteersNeeded,
       });
       await event.save();
+
+      const user = await User.findById(req.user.userId);
+      user.eventsCreated.push(event._id);
+      await user.save();
+      
       res.status(201).json({ message: 'Event created successfully' });
     } catch (error) {
       res.status(500).json({ error: error.message });
