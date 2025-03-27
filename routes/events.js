@@ -22,7 +22,19 @@ router.get('/', async (req, res) => {
         date: { $gte: new Date(startDate), $lte: new Date(endDate) }
       })
     };
-    const events = await Event.find(query).populate('organizer', 'username');
+
+    // Get events by organizer query
+    let events;
+    if (q) {
+      // Find users matching the query
+      const users = await User.find({ username: { $regex: q, $options: 'i' } }).select('_id');
+      const userIds = users.map(user => user._id);
+
+      // Add organizer filter to the query
+      query.$or.push({ organizer: { $in: userIds } });
+    }
+
+    events = await Event.find(query).populate('organizer', 'username');
     res.json(events);
   } catch (error) {
     res.status(500).json({ error: error.message });
