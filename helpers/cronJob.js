@@ -8,7 +8,7 @@ const fs = require("fs");
 // Schedule the job to run every day at midnight (0 0 * * *) || Test for every 5 minutes (*/5 * * * *)
 let isJobRunning = false;
 
-cron.schedule("*/5 * * * *", async () => {
+cron.schedule("*/30 * * * *", async () => {
    // Prevent concurrent job executions
    if (isJobRunning) {
      console.log("Job already in progress. Skipping this run.");

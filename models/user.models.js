@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  role: {
+    type: String,
+    enum: ['volunteer', 'ngo'],
+    default: 'volunteer'
+  },
   phoneNumber: {
     type: String
   },
@@ -31,8 +36,15 @@ const userSchema = new mongoose.Schema({
   eventsCompleted: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Event'
-  }]
+  }],
+  ...(this.role === 'ngo' ? {
+    eventsCreated: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Event'
+    }]
+  }: {})
 }, { timestamps: true });
+
 
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();

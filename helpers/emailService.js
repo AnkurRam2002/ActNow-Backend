@@ -20,7 +20,7 @@ const sendEmail = async (to, subject, text) => {
       text
     });
 
-    console.log("Email sent: ", info.response);
+    console.log(`Email sent to ${to}: `, info.response);
   } catch (error) {
     console.error("Error sending email: ", error);
   }
@@ -30,7 +30,7 @@ const sendEmail = async (to, subject, text) => {
 const sendAttachmentEmail = async (to, pdfPath, event) => {
   try {
     const info = await transporter.sendMail({
-      from: `"ActNow Customer Support Team" <${process.env.EMAIL_USER}>`,
+      from: `"ActNow Admin Team" <${process.env.EMAIL_USER}>`,
       to,
       subject: `🎉 Congratulations! You've Completed ${event.name}!`, 
       text: `Dear Participant,\n\nCongratulations on successfully completing the event: ${event.name} held on ${new Date(event.date).toDateString()}.\n\nPlease find your completion certificate attached.\n\nBest Regards,\nEvent Team`,
