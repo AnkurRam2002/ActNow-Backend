@@ -106,7 +106,7 @@ router.post('/create', auth , async (req, res) => {
     }
   });
 
-  router.delete('/:id', async (req, res) => {
+  router.delete('/:id', auth, async (req, res) => {
     try {
       const event = await Event.findOneAndDelete(
         { _id: req.params.id, organizer: req.user.userId } // Ensure only the creator can delete
