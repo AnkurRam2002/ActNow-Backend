@@ -106,6 +106,7 @@ router.post('/create', auth , async (req, res) => {
     }
   });
 
+  // Delete event
   router.delete('/:id', auth, async (req, res) => {
     try {
       const event = await Event.findOneAndDelete(
@@ -131,6 +132,7 @@ router.post('/create', auth , async (req, res) => {
     }
   });
 
+  // Add event._id to user.eventRegistered and user._id to event.volunteersAssigned
   router.post('/:id/participate', auth, async (req, res) => {
     try {
       const event = await Event.findById(req.params.id);

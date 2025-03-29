@@ -37,23 +37,19 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Event'
   }],
-  eventsCreated: {
-    type: [{
+  eventsCreated: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Event'
     }],
-    default: undefined,
-   } // Ensures it only exists when necessary
 }, { timestamps: true });
 
-// Pre-save middleware to dynamically add `eventsCreated` only for NGOs
 userSchema.pre('save', function (next) {
-  if (this.role === 'ngo' && !this.eventsCreated) {
-    this.eventsCreated = []; // Initialize only for NGO users
-  } else if (this.role === 'volunteer' && this.eventsCreated) {
+  if (this.role === 'ngo') {
+    this.eventsRegistered = undefined; // Remove for NGO users
+    this.eventsCompleted = undefined; // Remove for NGO users
+  } else if (this.role === 'volunteer') {
     this.eventsCreated = undefined; // Remove for volunteer users
   }
-  
   next();
 });
 
