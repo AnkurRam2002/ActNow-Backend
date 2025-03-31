@@ -7,13 +7,13 @@ const { sendEmail } = require('../helpers/emailService');
 
 // User registration endpoint
 router.post('/register', async (req, res) => {
-    const { username, email, password, phone, city, role } = req.body; // Accept phone and city
+    const { username, email, password, phone, city, role } = req.body;
     try {
         const user = new User({ 
             username, 
             email, 
             password, 
-            phoneNumber: phone, // Store phone as phoneNumber
+            phoneNumber: phone, 
             city,
             role
         });
@@ -38,7 +38,7 @@ router.post('/login', async (req, res) => {
         
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
         
-        res.status(200).json({  // Added status 200 for successful login
+        res.status(200).json({  
             username: user.username, 
             userEmail: user.email,
             userRole: user.role,

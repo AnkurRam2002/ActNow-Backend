@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 
 require("dotenv").config();
-require("./helpers/cronJob");
+require("./helpers/sendCertCron");
+require("./helpers/eventStatusCron");
 
 // Import Routes
 const authRoutes = require("./routes/auth");
