@@ -7,7 +7,7 @@ const getOnlyDate = (date) => {
   };
 
 // Cron job that runs every day at midnight to update events' status based on date
-cron.schedule('*/30 * * * *', async () => {
+cron.schedule('*/1 * * * *', async () => {
   try {
     const today = getOnlyDate(new Date());
 
@@ -17,7 +17,7 @@ cron.schedule('*/30 * * * *', async () => {
 
     // Find all events whose date is less than or equal to today
     const eventsToUpdate = await Event.find({ 
-        date: { $gte: todayStart, $lt: todayEnd },
+        date: { $lt: todayEnd },
         status: 'Upcoming' 
     });
 
@@ -25,7 +25,7 @@ cron.schedule('*/30 * * * *', async () => {
     for (let event of eventsToUpdate) {
         const eventDate = getOnlyDate(new Date(event.date)); 
 
-      if (eventDate < today) {
+      if (eventDate < todayStart) {
         event.status = 'Completed'; // Event is in the past
       } else if (eventDate.getTime() === today.getTime()) {
         event.status = 'Ongoing'; // Event is happening today
