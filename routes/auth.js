@@ -38,7 +38,7 @@ router.post('/login', async (req, res) => {
         
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
         
-        res.json({ 
+        res.status(200).json({  // Added status 200 for successful login
             username: user.username, 
             userEmail: user.email,
             userRole: user.role,
@@ -52,7 +52,6 @@ router.post('/login', async (req, res) => {
 
 // User logout endpoint
 router.post('/logout', async (req, res) => {
-  
     try {
         return res.status(200).json({
             success: true,

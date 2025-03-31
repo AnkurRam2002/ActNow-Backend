@@ -27,7 +27,7 @@ router.post('/forgot-password', async (req, res) => {
       expiresAt: Date.now() + 10 * 60 * 1000 
     };
 
-    console.log('OTP is', otpStore[identifier].otp)
+    console.log('OTP is', otpStore[identifier].otp);
     console.log('Expires at', new Date(otpStore[identifier].expiresAt).toLocaleString());
 
     // Send OTP via Email or SMS
@@ -38,7 +38,6 @@ router.post('/forgot-password', async (req, res) => {
         `You are receiving this email because you have requested an OTP to change your password. Your OTP is: ${otp}. Valid for 10 minutes`
       );
       return res.status(200).json({ message: "OTP sent to your email" });
-
     } else {
       await sendSMS(
         phone,
@@ -101,6 +100,8 @@ router.post('/reset-password', async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 });
+
+
 
 
 

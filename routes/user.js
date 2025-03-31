@@ -2,17 +2,17 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user.models');
 
-//Get user details by id -> new change
+// Get user details by ID
 router.get('/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
-      .populate('eventsRegistered', 'name date location') // Fetch event details
+      .populate('eventsRegistered', 'name date location')
       .populate('eventsCompleted', 'name date location')
       .populate('eventsCreated', 'name date location');
 
     if (!user) return res.status(404).json({ error: 'User not found' });
 
-    res.json(user);
+    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch user details.' });
   }
@@ -22,7 +22,10 @@ router.get('/:id', async (req, res) => {
 router.get('/:id/eventsRegistered', async (req, res) => {
   try {
     const user = await User.findById(req.params.id).populate('eventsRegistered', 'name date location');
-    res.json(user.eventsRegistered);
+    
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    res.status(200).json(user.eventsRegistered);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch registered events.' });
   }
@@ -32,7 +35,10 @@ router.get('/:id/eventsRegistered', async (req, res) => {
 router.get('/:id/eventsCompleted', async (req, res) => {
   try {
     const user = await User.findById(req.params.id).populate('eventsCompleted', 'name date location');
-    res.json(user.eventsCompleted);
+    
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    res.status(200).json(user.eventsCompleted);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch completed events.' });
   }
