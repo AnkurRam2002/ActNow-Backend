@@ -12,6 +12,8 @@ if (!fs.existsSync(certificatesDir)) {
 const generateCertificate = async (userName, event) => {
   return new Promise((resolve, reject) => {
     try {
+      const doc = new PDFDocument({ size: "A4", layout: "landscape" }); // Landscape mode
+
       const fileName = `${userName}_${event.name}_certificate.pdf`;
       const pdfPath = path.join(certificatesDir, fileName);
       
@@ -21,7 +23,6 @@ const generateCertificate = async (userName, event) => {
 
       doc.pipe(stream);
 
-      const doc = new PDFDocument({ size: "A4", layout: "landscape" }); // Landscape mode
       const pageWidth = doc.page.width;
       const pageHeight = doc.page.height;
   

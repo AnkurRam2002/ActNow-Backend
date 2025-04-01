@@ -1,13 +1,12 @@
 const cron = require('node-cron');
 const Event = require('../models/event.models'); 
-const { TodayInstance } = require('twilio/lib/rest/api/v2010/account/usage/record/today');
 
 const getOnlyDate = (date) => {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate()); // Only YYYY-MM-DD
   };
 
 // Cron job that runs every day at midnight to update events' status based on date
-cron.schedule('*/1 * * * *', async () => {
+cron.schedule('*/50 * * * *', async () => {
   try {
     const today = getOnlyDate(new Date());
 
@@ -18,7 +17,7 @@ cron.schedule('*/1 * * * *', async () => {
     // Find all events whose date is less than or equal to today
     const eventsToUpdate = await Event.find({ 
         date: { $lt: todayEnd },
-        status: 'Upcoming' 
+        status: { $in: ['Upcoming', 'Ongoing'] }
     });
 
     // Update status of all such events to "Ongoing" or "Completed"
