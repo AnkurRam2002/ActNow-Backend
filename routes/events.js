@@ -101,6 +101,25 @@ router.delete('/:id', auth, async (req, res) => {
     );
 
     if (!event) return res.status(404).json({ error: 'Event not found or unauthorized.' });
+
+    // Remove event from eventRegistered and eventCompleted for volunteers
+    if (event.volunteersAssigned.length > 0) {
+      await User.updateMany(
+        { _id: { $in: event.volunteersAssigned } },
+        {
+          $pull: {
+            eventsRegistered: req.params.id,
+            eventsCompleted: req.params.id
+          }
+        }
+      );
+    }
+    // Remove event from eventCreated only for NGOs
+    await User.updateOne(
+      { _id: req.user.userId },
+      { $pull: { eventsCreated: req.params.id } }
+    );
+
     res.status(200).json({ message: 'Event deleted successfully.' });
   } catch (error) {
     res.status(500).json({ error: error.message });
