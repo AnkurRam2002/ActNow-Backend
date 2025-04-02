@@ -18,7 +18,6 @@ router.get('/', async (req, res) => {
         ]
       }),
 
-      // New change
       ...(startDate && {
         date: { $gte: new Date(startDate) }
       }),
@@ -28,9 +27,6 @@ router.get('/', async (req, res) => {
       ...(startDate && endDate && {
         date: { $gte: new Date(startDate), $lte: new Date(endDate) }
       })
-      // ...(startDate && endDate && {
-      //   date: { $gte: new Date(startDate), $lte: new Date(endDate) }
-      // })
     };
 
     let events;

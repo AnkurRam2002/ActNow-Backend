@@ -26,7 +26,7 @@ cron.schedule('*/50 * * * *', async () => {
 
       if (eventDate < todayStart) {
         event.status = 'Completed'; // Event is in the past
-      } else if (eventDate.getTime() === today.getTime()) {
+      } else if (eventDate.getTime() === today.getTime() && event.status !== 'Ongoing') {
         event.status = 'Ongoing'; // Event is happening today
       }
 
