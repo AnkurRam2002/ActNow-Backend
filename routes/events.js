@@ -17,9 +17,20 @@ router.get('/', async (req, res) => {
           { requiredSkills: { $regex: q, $options: 'i' } }
         ]
       }),
+
+      // New change
+      ...(startDate && {
+        date: { $gte: new Date(startDate) }
+      }),
+      ...(endDate && {
+        date: { $lte: new Date(endDate) }
+      }),
       ...(startDate && endDate && {
         date: { $gte: new Date(startDate), $lte: new Date(endDate) }
       })
+      // ...(startDate && endDate && {
+      //   date: { $gte: new Date(startDate), $lte: new Date(endDate) }
+      // })
     };
 
     let events;
