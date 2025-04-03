@@ -24,14 +24,20 @@ cron.schedule('*/50 * * * *', async () => {
     for (let event of eventsToUpdate) {
         const eventDate = getOnlyDate(new Date(event.date)); 
 
-      if (eventDate < todayStart) {
-        event.status = 'Completed'; // Event is in the past
-      } else if (eventDate.getTime() === today.getTime() && event.status !== 'Ongoing') {
-        event.status = 'Ongoing'; // Event is happening today
-      }
+        let newStatus = event.status;
 
-      await event.save(); // Save the updated event status
-      console.log(`Event "${event.name}" status updated to ${event.status}`);
+        if (eventDate < todayStart) {
+          newStatus = "Completed"; // Event is in the past
+        } else if (eventDate.getTime() === today.getTime() && event.status !== "Ongoing") {
+          newStatus = "Ongoing"; // Event is happening today
+        }
+  
+        // Only update if the status actually changes
+        if (event.status !== newStatus) {
+          event.status = newStatus;
+          await event.save();
+          console.log(`Event "${event.name}" status updated to ${event.status}`);
+        }
     }
   } catch (err) {
     console.error('Error updating event statuses:', err);
