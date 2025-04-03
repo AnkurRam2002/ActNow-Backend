@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const moment = require('moment-timezone');
 
 const eventSchema = new mongoose.Schema({
   name: {
@@ -42,11 +41,5 @@ const eventSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-eventSchema.pre('save', function (next) {
-  if (this.date) {
-  this.date = moment(this.date).tz('Asia/Kolkata').toDate();
-  } // Set the date to the current date in Asia/Kolkata timezone
-  next();
-});
 
 module.exports = mongoose.model('Event', eventSchema);
