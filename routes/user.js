@@ -169,8 +169,8 @@ router.delete('/:id', auth, async (req, res) => {
             }
           );
         }
-
-    if (!deletedUser) {
+    // Corrected error: changed deletedUser -> user
+    if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
