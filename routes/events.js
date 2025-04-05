@@ -82,7 +82,7 @@ router.post('/create', auth , async (req, res) => {
 });
 
 // Update event details
-router.put('/:id', auth , async (req, res) => {
+router.put('/:id/edit', auth , async (req, res) => {
   try {
     const { name, description, date, location, requiredSkills, volunteersNeeded } = req.body;
     const skillsArray = Array.isArray(requiredSkills) ? requiredSkills : (requiredSkills ? [requiredSkills] : []);
