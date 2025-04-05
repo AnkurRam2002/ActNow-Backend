@@ -149,6 +149,7 @@ router.put('/:id/edit', auth, async (req, res) => {
   }
 });
 
+// Delete user profile
 router.delete('/:id', auth, async (req, res) => {
   try {
     if (req.user.userId !== req.params.id) {
