@@ -149,4 +149,35 @@ router.put('/:id/edit', auth, async (req, res) => {
   }
 });
 
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    if (req.user.userId !== req.params.id) {
+      return res.status(403).json({ error: 'Unauthorized to delete this user profile.' });
+    }
+
+    const user = await User.findByIdAndDelete(req.params.id);
+
+    // delete user id from events volunteerAssigned array
+    if (user.eventsRegistered.length > 0) {
+          await Event.updateMany(
+            { _id: { $in: user.eventsRegistered } },
+            {
+              $pull: {
+                volunteersAssigned: req.params.id
+              }
+            }
+          );
+        }
+
+    if (!deletedUser) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ error: 'Failed to delete user profile.' });
+  }
+});
+
 module.exports = router;
