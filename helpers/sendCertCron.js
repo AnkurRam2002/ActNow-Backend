@@ -17,7 +17,7 @@ cron.schedule("*/60 * * * *", async () => {
 
    try {
      isJobRunning = true;
-     console.log(`Event completion job started at: ${new Date().toISOString()}`);
+     console.log(`Certificate sending job started at: ${new Date().toISOString()}`);
 
      const users = await User.find({
        eventsRegistered: { $exists: true, $not: { $size: 0 } }
@@ -46,7 +46,7 @@ cron.schedule("*/60 * * * *", async () => {
 
        if (newlyCompletedEvents.length > 0) {
          for (const event of newlyCompletedEvents) {
-           console.log(`Processing event completion for User ${user.username}: ${event.name}`);
+           console.log(`Processing certificate sending for User ${user.username}: ${event.name}`);
 
            try {
              // Generate PDF Certificate 
@@ -72,9 +72,9 @@ cron.schedule("*/60 * * * *", async () => {
        }
      }
 
-     console.log(`Event completion job finished at: ${new Date().toISOString()}`);
+     console.log(`Certificate Sending job finished at: ${new Date().toISOString()}`);
    } catch (error) {
-     console.error("Critical error in event completion job:", error);
+     console.error("Critical error in certificate sending job:", error);
    } finally {
      isJobRunning = false;
    }

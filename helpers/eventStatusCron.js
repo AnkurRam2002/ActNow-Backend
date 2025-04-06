@@ -6,8 +6,20 @@ const getOnlyDate = (date) => {
   };
 
 // Cron job that runs every day at midnight to update events' status based on date
+
+let isJobRunning = false;
+
 cron.schedule('*/50 * * * *', async () => {
+
+  if (isJobRunning) {
+    console.log("Job already in progress. Skipping this run.");
+    return;
+  }
+
   try {
+    isJobRunning = true;
+    console.log(`Event status update job started at: ${new Date().toISOString()}`);
+    
     const today = getOnlyDate(new Date());
 
     const now = new Date();
@@ -39,7 +51,11 @@ cron.schedule('*/50 * * * *', async () => {
           console.log(`Event "${event.name}" status updated to ${event.status}`);
         }
     }
+
+    console.log(`Event status update job completed at: ${new Date().toISOString()}`);
   } catch (err) {
     console.error('Error updating event statuses:', err);
+  } finally {
+    isJobRunning = false;
   }
 });
