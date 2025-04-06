@@ -71,16 +71,12 @@ router.get('/:id/myEvents', async (req, res) => {
     if (userId) {
       const user = await User.findById(userId);
       
-      if (user && user.eventsCreated) {
-        userEvents = user.eventsCreated; 
-      } else {
-        return res.status(404).json({ message: "User not found" });
-      } 
-
-      if (user && user.eventsRegistered) {
+      if (user.role === 'ngo' && user.eventsCreated) {
+        userEvents = user.eventsCreated;
+      } else if (user.role === 'volunteer' && user.eventsRegistered) {
         userEvents = user.eventsRegistered;
       } else {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ message: "No events found for user role" });
       }
     }
 
