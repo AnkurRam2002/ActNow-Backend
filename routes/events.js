@@ -1,42 +1,45 @@
 const express = require("express");
 const router = express.Router();
-const Event = require('../models/event.models');
-const auth = require('../helpers/authMiddleware');
+const Event = require("../models/event.models");
+const auth = require("../helpers/authMiddleware");
 const User = require("../models/user.models");
 
 // Get all events
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const { q, startDate, endDate } = req.query;
     const query = {
       ...(q && {
         $or: [
-          { name: { $regex: q, $options: 'i' } },
-          { description: { $regex: q, $options: 'i' } },
-          { location: { $regex: q, $options: 'i' } },
-          { requiredSkills: { $regex: q, $options: 'i' } }
-        ]
+          { name: { $regex: q, $options: "i" } },
+          { description: { $regex: q, $options: "i" } },
+          { location: { $regex: q, $options: "i" } },
+          { requiredSkills: { $regex: q, $options: "i" } },
+        ],
       }),
 
       ...(startDate && {
-        date: { $gte: new Date(startDate) }
+        date: { $gte: new Date(startDate) },
       }),
       ...(endDate && {
-        date: { $lte: new Date(endDate) }
+        date: { $lte: new Date(endDate) },
       }),
-      ...(startDate && endDate && {
-        date: { $gte: new Date(startDate), $lte: new Date(endDate) }
-      })
+      ...(startDate &&
+        endDate && {
+          date: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        }),
     };
 
     let events;
     if (q) {
-      const users = await User.find({ username: { $regex: q, $options: 'i' } }).select('_id');
-      const userIds = users.map(user => user._id);
+      const users = await User.find({
+        username: { $regex: q, $options: "i" },
+      }).select("_id");
+      const userIds = users.map((user) => user._id);
       query.$or.push({ organizer: { $in: userIds } });
     }
 
-    events = await Event.find(query).populate('organizer', 'username');
+    events = await Event.find(query).populate("organizer", "username");
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -44,10 +47,13 @@ router.get('/', async (req, res) => {
 });
 
 // Get event by id
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id).populate('organizer', 'username');
-    if (!event) return res.status(404).json({ error: 'Event not found.' });
+    const event = await Event.findById(req.params.id).populate(
+      "organizer",
+      "username"
+    );
+    if (!event) return res.status(404).json({ error: "Event not found." });
     res.status(200).json(event);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -55,9 +61,20 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create new event
-router.post('/create', auth , async (req, res) => {
-  const { name, description, date, location, requiredSkills, volunteersNeeded } = req.body;
-  const skillsArray = Array.isArray(requiredSkills) ? requiredSkills : (requiredSkills ? [requiredSkills] : []);
+router.post("/create", auth, async (req, res) => {
+  const {
+    name,
+    description,
+    date,
+    location,
+    requiredSkills,
+    volunteersNeeded,
+  } = req.body;
+  const skillsArray = Array.isArray(requiredSkills)
+    ? requiredSkills
+    : requiredSkills
+    ? [requiredSkills]
+    : [];
 
   try {
     const event = new Event({
@@ -74,26 +91,50 @@ router.post('/create', auth , async (req, res) => {
     const user = await User.findById(req.user.userId);
     user.eventsCreated.push(event._id);
     await user.save();
-    
-    res.status(201).json({ message: 'Event created successfully' });
+
+    res.status(201).json({
+      message: "Event created successfully",
+      eventId: event._id,
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // Update event details
-router.put('/:id/edit', auth , async (req, res) => {
+router.put("/:id/edit", auth, async (req, res) => {
   try {
-    const { name, description, date, location, requiredSkills, volunteersNeeded } = req.body;
-    const skillsArray = Array.isArray(requiredSkills) ? requiredSkills : (requiredSkills ? [requiredSkills] : []);
+    const {
+      name,
+      description,
+      date,
+      location,
+      requiredSkills,
+      volunteersNeeded,
+    } = req.body;
+    const skillsArray = Array.isArray(requiredSkills)
+      ? requiredSkills
+      : requiredSkills
+      ? [requiredSkills]
+      : [];
 
     const event = await Event.findOneAndUpdate(
       { _id: req.params.id, organizer: req.user.userId },
-      { name, description, date, location, requiredSkills: skillsArray, volunteersNeeded },
+      {
+        name,
+        description,
+        date,
+        location,
+        requiredSkills: skillsArray,
+        volunteersNeeded,
+      },
       { new: true }
     );
 
-    if (!event) return res.status(404).json({ error: 'Event not found or unauthorized.' });
+    if (!event)
+      return res
+        .status(404)
+        .json({ error: "Event not found or unauthorized." });
     res.status(200).json(event);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -101,13 +142,17 @@ router.put('/:id/edit', auth , async (req, res) => {
 });
 
 // Delete event
-router.delete('/:id', auth, async (req, res) => {
+router.delete("/:id", auth, async (req, res) => {
   try {
-    const event = await Event.findOneAndDelete(
-      { _id: req.params.id, organizer: req.user.userId }
-    );
+    const event = await Event.findOneAndDelete({
+      _id: req.params.id,
+      organizer: req.user.userId,
+    });
 
-    if (!event) return res.status(404).json({ error: 'Event not found or unauthorized.' });
+    if (!event)
+      return res
+        .status(404)
+        .json({ error: "Event not found or unauthorized." });
 
     // Remove event from eventRegistered and eventCompleted for volunteers
     if (event.volunteersAssigned.length > 0) {
@@ -116,8 +161,8 @@ router.delete('/:id', auth, async (req, res) => {
         {
           $pull: {
             eventsRegistered: req.params.id,
-            eventsCompleted: req.params.id
-          }
+            eventsCompleted: req.params.id,
+          },
         }
       );
     }
@@ -127,17 +172,20 @@ router.delete('/:id', auth, async (req, res) => {
       { $pull: { eventsCreated: req.params.id } }
     );
 
-    res.status(200).json({ message: 'Event deleted successfully.' });
+    res.status(200).json({ message: "Event deleted successfully." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
 // Get event participants
-router.get('/:id/participants', async (req, res) => {
+router.get("/:id/participants", async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id).populate('volunteersAssigned', 'username');
-    if (!event) return res.status(404).json({ error: 'Event not found.' });
+    const event = await Event.findById(req.params.id).populate(
+      "volunteersAssigned",
+      "username"
+    );
+    if (!event) return res.status(404).json({ error: "Event not found." });
     res.status(200).json(event.volunteersAssigned);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -145,25 +193,27 @@ router.get('/:id/participants', async (req, res) => {
 });
 
 // Participate in event
-router.post('/:id/participate', auth, async (req, res) => {
+router.post("/:id/participate", auth, async (req, res) => {
   try {
     const event = await Event.findById(req.params.id);
-    if (!event) return res.status(404).json({ error: 'Event not found.' });
+    if (!event) return res.status(404).json({ error: "Event not found." });
 
     if (event.volunteersAssigned.includes(req.user.userId)) {
-      return res.status(400).json({ error: 'User already participating in event.' });
+      return res
+        .status(400)
+        .json({ error: "User already participating in event." });
     }
 
     event.volunteersAssigned.push(req.user.userId);
     await event.save();
 
     const user = await User.findById(req.user.userId);
-    if (!user) return res.status(404).json({ error: 'User not found.' });
+    if (!user) return res.status(404).json({ error: "User not found." });
 
     user.eventsRegistered.push(req.params.id);
     await user.save();
 
-    res.status(200).json({ message: 'User added to event successfully.' });
+    res.status(200).json({ message: "User added to event successfully." });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
