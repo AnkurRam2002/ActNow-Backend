@@ -165,7 +165,14 @@ router.delete('/:id', auth, async (req, res) => {
             }
           );
         }
-    // Corrected error: changed deletedUser -> user
+
+    if (user.eventsCreated.length > 0) {
+          await Event.deleteMany(
+            { _id: { $in: user.eventsCreated } },
+            { organizer: req.params.id }
+          );
+        }
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
