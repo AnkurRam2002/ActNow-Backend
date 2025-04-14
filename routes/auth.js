@@ -7,7 +7,7 @@ const { sendEmail } = require('../helpers/emailService');
 
 // User registration endpoint
 router.post('/register', async (req, res) => {
-    const { username, email, password, phone, city, role } = req.body;
+    const { username, email, password, phone, city, role, skills } = req.body;
     try {
         const user = new User({ 
             username, 
@@ -15,7 +15,8 @@ router.post('/register', async (req, res) => {
             password, 
             phoneNumber: phone, 
             city,
-            role
+            role,
+            skills: Array.isArray(skills) ? skills : skills ? [skills] : []
         });
         await user.save();
         await sendEmail(email, "Welcome to ActNow", `Hello ${username},\n\nThank you for registering on our platform. We're excited to have you on board.\n\nBest Wishes,\nActNow Team`);
