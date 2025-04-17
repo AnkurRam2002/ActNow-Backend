@@ -53,16 +53,42 @@ router.post('/chat', auth , async (req, res) => {
         responseMessage = `You are registered for the following upcoming events:\n` + 
           upcomingEvents.map(event => `• ${event.name} on ${event.date.toLocaleDateString()}`).join('\n');
       }
+    } 
+    
+    else if (message.toLowerCase().includes('recommend some events')) {
+    const allEvents = await Event.find({ date: { $gt: new Date() } });
+
+    // Filter events by skill match or location match
+    const matchedEvents = allEvents.filter(event => {
+      const skillMatch = event.requiredSkills?.some(skill => user.skills?.includes(skill));
+      const locationMatch = event.location?.toLowerCase() === user.location?.toLowerCase();
+      return skillMatch || locationMatch;
+    });
+
+    if (matchedEvents.length === 0) {
+      responseMessage = "I couldn't find any events that match your skills or location.";
+    } else {
+      // Prepare context for AI
+      const prompt = `
+      You are an event assistant AI. Based on the user's skills (${user.skills?.join(', ')}) and their location (${user.location}), recommend some events from the list below. Explain *why* each recommended event is a good fit.
+
+      Event List:
+      ${matchedEvents.map(event => 
+      `• ${event.name} on ${event.date.toLocaleDateString()} at ${event.location}. Requires: ${event.requiredSkills?.join(', ')}`).join('\n\n')}
+      Please recommend these events to the user in a friendly and conversational way. Be concise, explain why these events are a good match for them, and encourage them to register.Avoid using Markdown formatting (like **bold** or *italic*). Just use plain text and proper numbering.`.trim();
+      responseMessage = await getAIResponse(prompt);
     }
-    else {
-      // If the message does not match a specific query, let AI handle it
-      responseMessage = await getAIResponse(message);
-    }
-    res.json({ reply: responseMessage });
-  } catch (error) {
-    console.error('Error in /chat route:', error);
-    res.status(500).json({ error: 'Failed to get AI response' });
+
+  } else {
+    responseMessage = await getAIResponse(message);
   }
+
+  res.json({ reply: responseMessage });
+
+} catch (error) {
+  console.error('Error in /chat route:', error);
+  res.status(500).json({ error: 'Failed to get AI response' });
+}
 });
 
 module.exports = router;
