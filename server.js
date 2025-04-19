@@ -12,6 +12,7 @@ const eventRoutes = require("./routes/events");
 const userRoutes = require("./routes/user");
 const passRoutes = require("./routes/pass");
 const chatbotRoutes = require("./routes/chatbot");
+const pushRoutes = require("./routes/pushrouter");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/api/events", eventRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api", passRoutes);
 app.use("/api", chatbotRoutes);
+app.use("/api/push", pushRoutes);
 
 // Connect to MongoDB Atlas
 mongoose

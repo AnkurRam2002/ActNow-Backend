@@ -3,6 +3,7 @@ const router = express.Router();
 const Event = require("../models/event.models");
 const auth = require("../helpers/authMiddleware");
 const User = require("../models/user.models");
+const webpush = require("web-push");
 
 // Get all events
 router.get("/", async (req, res) => {
@@ -212,6 +213,22 @@ router.post("/:id/participate", auth, async (req, res) => {
 
     user.eventsRegistered.push(req.params.id);
     await user.save();
+
+    // ✅ Send push notification if user has subscription
+    const subscription = user.pushSubscription;
+    if (subscription) {
+      const payload = JSON.stringify({
+        title: "ActNow",
+        body: `You successfully joined: ${event.name}`,
+        icon: "/icon.png" // Update this path if needed
+      });
+
+      try {
+        await webpush.sendNotification(subscription, payload);
+      } catch (err) {
+        console.error("Push notification error:", err);
+      }
+    }
 
     res.status(200).json({ message: "User added to event successfully." });
   } catch (error) {

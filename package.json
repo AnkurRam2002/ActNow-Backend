@@ -11,7 +11,8 @@
     "nodemailer": "^6.10.0",
     "otp-generator": "^4.0.1",
     "pdfkit": "^0.16.0",
-    "twilio": "^5.5.0"
+    "twilio": "^5.5.0",
+    "web-push": "^3.6.7"
   },
   "name": "final-year-backend",
   "version": "1.0.0",

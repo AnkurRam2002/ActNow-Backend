@@ -41,7 +41,15 @@ const userSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Event'
     }],
-}, { timestamps: true });
+    pushSubscription: {
+      endpoint: String,
+      expirationTime: Date,
+      keys: {
+        p256dh: String,
+        auth: String
+      }
+    }
+  }, { timestamps: true });
 
 userSchema.pre('save', function (next) {
   if (this.role === 'ngo') {
