@@ -219,4 +219,37 @@ router.post("/:id/participate", auth, async (req, res) => {
   }
 });
 
+// Undo participation in event
+router.post("/:id/unparticipate", auth, async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ error: "Event not found." });
+
+    const userId = req.user.userId;
+
+    if (!event.volunteersAssigned.includes(userId)) {
+      return res
+        .status(400)
+        .json({ error: "User is not participating in this event." });
+    }
+
+    // Remove user from event
+    event.volunteersAssigned = event.volunteersAssigned.filter(
+      (volunteerId) => volunteerId.toString() !== userId
+    );
+    await event.save();
+
+    // Remove event from user's registered list
+    const user = await User.findById(userId);
+    user.eventsRegistered = user.eventsRegistered.filter(
+      (eventId) => eventId.toString() !== req.params.id
+    );
+    await user.save();
+
+    res.status(200).json({ message: "Participation undone successfully." });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 module.exports = router;
