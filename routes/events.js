@@ -306,16 +306,36 @@ router.post("/:id/toggle-attendance", auth, async (req, res) => {
     );
 
     // If already present, remove them from the attendance list (toggle off)
+    let message;
     if (isPresent) {
       event.volunteersPresent = event.volunteersPresent.filter(
         (id) => id.toString() !== volunteerId
       );
+      message = `You have been marked absent for the event: ${event.name}`;
     } else {
       // If not present, mark them as present (toggle on)
       event.volunteersPresent.push(volunteerId);
+      message = `You have been marked present for the event: ${event.name}`;
     }
 
     await event.save();
+
+    // ✅ Send Web Push Notification if subscription exists
+    const user = await User.findById(volunteerId);
+    const subscription = user.pushSubscription;
+    if (subscription) {
+      const payload = JSON.stringify({
+        title: "Attendance Update",
+        body: message,
+        url: `/dashboard/events`, // optional: open a relevant page when clicked
+      });
+
+      try {
+        await webpush.sendNotification(subscription, payload);
+      } catch (err) {
+        console.error("Error sending push notification:", err);
+      }
+    }
 
     // Respond with updated attendance list and appropriate message
     res.status(200).json({
