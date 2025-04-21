@@ -5,6 +5,7 @@ const cors = require("cors");
 require("dotenv").config();
 require("./helpers/sendCertCron");
 require("./helpers/eventStatusCron");
+require("./helpers/activityListener");
 
 // Import Routes
 const authRoutes = require("./routes/auth");
@@ -13,6 +14,7 @@ const userRoutes = require("./routes/user");
 const passRoutes = require("./routes/pass");
 const chatbotRoutes = require("./routes/chatbot");
 const pushRoutes = require("./routes/pushrouter");
+const adminRoutes = require("./routes/admin");
 
 const app = express();
 
@@ -27,6 +29,7 @@ app.use("/api/users", userRoutes);
 app.use("/api", passRoutes);
 app.use("/api", chatbotRoutes);
 app.use("/api/push", pushRoutes);
+app.use("/api/admin", adminRoutes);
 
 // Connect to MongoDB Atlas
 mongoose

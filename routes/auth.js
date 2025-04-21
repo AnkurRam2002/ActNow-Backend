@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user.models');
 const { sendEmail } = require('../helpers/emailService');
+const activityEmitter = require('../helpers/activityEmitter');
 
 // User registration endpoint
 router.post('/register', async (req, res) => {
@@ -38,7 +39,11 @@ router.post('/login', async (req, res) => {
         }
         
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+        console.log('Emitting user-login event for userId:', user._id);
         
+        activityEmitter.emit('user-login', { userId: user._id });
+
         res.status(200).json({  
             username: user.username, 
             userEmail: user.email,
