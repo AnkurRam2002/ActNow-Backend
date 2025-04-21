@@ -160,7 +160,8 @@ router.delete('/:id', auth, async (req, res) => {
             { _id: { $in: user.eventsRegistered } },
             {
               $pull: {
-                volunteersAssigned: req.params.id
+                volunteersAssigned: req.params.id,
+                volunteersPresent: req.params.id
               }
             }
           );
