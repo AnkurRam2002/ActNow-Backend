@@ -28,6 +28,10 @@ const eventSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   }],
+  volunteersPresent: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   organizer: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

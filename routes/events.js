@@ -269,4 +269,66 @@ router.post("/:id/unparticipate", auth, async (req, res) => {
   }
 });
 
+// Toggle attendance for a volunteer (by NGO)
+router.post("/:id/toggle-attendance", auth, async (req, res) => {
+  try {
+    const eventId = req.params.id;
+    const { volunteerId } = req.body;
+    const ngoId = req.user.userId;
+
+    // Validate if volunteer ID is provided
+    if (!volunteerId) {
+      return res.status(400).json({ error: "Volunteer ID is required." });
+    }
+
+    // Fetch the event from the database
+    const event = await Event.findById(eventId);
+    if (!event) {
+      return res.status(404).json({ error: "Event not found." });
+    }
+
+    // Ensure that only the event organizer can modify attendance
+    if (event.organizer.toString() !== ngoId) {
+      return res.status(403).json({ error: "You are not authorized to modify this event." });
+    }
+
+    // Check if the volunteer is actually assigned to the event
+    const isAssigned = event.volunteersAssigned.some(
+      (id) => id.toString() === volunteerId
+    );
+    if (!isAssigned) {
+      return res.status(400).json({ error: "Volunteer is not assigned to this event." });
+    }
+
+    // Check if the volunteer is already marked present
+    const isPresent = event.volunteersPresent.some(
+      (id) => id.toString() === volunteerId
+    );
+
+    // If already present, remove them from the attendance list (toggle off)
+    if (isPresent) {
+      event.volunteersPresent = event.volunteersPresent.filter(
+        (id) => id.toString() !== volunteerId
+      );
+    } else {
+      // If not present, mark them as present (toggle on)
+      event.volunteersPresent.push(volunteerId);
+    }
+
+    await event.save();
+
+    // Respond with updated attendance list and appropriate message
+    res.status(200).json({
+      message: isPresent
+        ? "Volunteer marked as absent."
+        : "Volunteer marked as present.",
+      volunteersPresent: event.volunteersPresent,
+    });
+
+  } catch (error) {
+    console.error("Error toggling attendance:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
 module.exports = router;
