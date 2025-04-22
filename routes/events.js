@@ -320,25 +320,6 @@ router.post("/:id/toggle-attendance", auth, async (req, res) => {
 
     await event.save();
 
-    // ✅ Send Web Push Notification if subscription exists
-    // const user = await User.findById(volunteerId);
-    // const subscription = user.pushSubscription;
-    // if (subscription) {
-    //   const payload = JSON.stringify({
-    //     title: "Attendance Update",
-    //     body: message,
-    //     url: `/dashboard/events`, // optional: open a relevant page when clicked
-    //   });
-
-    //   try {
-    //     await webpush.sendNotification(subscription, payload);
-    //     console.log("Sending notification to:", user.username, user.email);
-
-    //   } catch (err) {
-    //     console.error("Error sending push notification:", err);
-    //   }
-    // }
-
     // Respond with updated attendance list and appropriate message
     res.status(200).json({
       message: isPresent
