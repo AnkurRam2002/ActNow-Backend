@@ -4,7 +4,10 @@ const router = express.Router();
 
 router.get('/activities', async (req, res) => {
   try {
-    const activities = await Activity.find()
+    const { userId } = req.query;
+    const query = userId ? { user: userId } : {};
+
+    const activities = await Activity.find(query)
       .populate('user', 'username') 
       .sort({ createdAt: -1 });
     res.json(activities);
