@@ -112,3 +112,31 @@ activityEmitter.on('event-delete', async ({ userId, eventName }) => {
     console.error('❌ Error logging activity:', error.message);
   }
 });
+
+//Event Participate
+activityEmitter.on('event-participate', async ({ userId, eventName }) => {
+  try {
+    const activity = await Activity.create({
+      action: 'event-participate',
+      user: userId,
+      metadata: { eventName }
+    });
+    console.log(`✅ Activity Logged: event-participate for user ${userId}`, activity);
+  } catch (error) {
+    console.error('❌ Error logging activity:', error.message);
+  }
+});
+
+//Event Unparticipate
+activityEmitter.on('event-unparticipate', async ({ userId, eventName }) => {
+  try {
+    const activity = await Activity.create({
+      action: 'event-unparticipate',
+      user: userId,
+      metadata: { eventName }
+    });
+    console.log(`✅ Activity Logged: event-unparticipate for user ${userId}`, activity);
+  } catch (error) {
+    console.error('❌ Error logging activity:', error.message);
+  }
+});

@@ -238,6 +238,8 @@ router.post("/:id/participate", auth, async (req, res) => {
       }
     }
 
+    activityEmitter.emit("event-participate", { userId: req.user.userId, eventName: event.name });
+
     res.status(200).json({ message: "User added to event successfully." });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -270,6 +272,8 @@ router.post("/:id/unparticipate", auth, async (req, res) => {
       (eventId) => eventId.toString() !== req.params.id
     );
     await user.save();
+
+    activityEmitter.emit("event-unparticipate", { userId, eventName: event.name });
 
     res.status(200).json({ message: "Participation undone successfully." });
   } catch (error) {
