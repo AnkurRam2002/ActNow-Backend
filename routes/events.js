@@ -4,6 +4,7 @@ const Event = require("../models/event.models");
 const auth = require("../helpers/authMiddleware");
 const User = require("../models/user.models");
 const webpush = require("web-push");
+const activityEmitter = require("../helpers/activityEmitter");
 
 // Get all events
 router.get("/", async (req, res) => {
@@ -93,6 +94,8 @@ router.post("/create", auth, async (req, res) => {
     user.eventsCreated.push(event._id);
     await user.save();
 
+    activityEmitter.emit("event-create", { userId: req.user.userId, eventName: event.name });
+
     res.status(201).json({
       message: "Event created successfully",
       eventId: event._id,
@@ -136,6 +139,9 @@ router.put("/:id/edit", auth, async (req, res) => {
       return res
         .status(404)
         .json({ error: "Event not found or unauthorized." });
+
+    activityEmitter.emit("event-edit", { userId: req.user.userId, eventName: event.name });
+
     res.status(200).json(event);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -172,6 +178,8 @@ router.delete("/:id", auth, async (req, res) => {
       { _id: req.user.userId },
       { $pull: { eventsCreated: req.params.id } }
     );
+
+    activityEmitter.emit("event-delete", { userId: req.user.userId, eventName: event.name });
 
     res.status(200).json({ message: "Event deleted successfully." });
   } catch (error) {

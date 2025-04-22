@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../models/user.models');
 const auth = require('../helpers/authMiddleware');
 const Event = require('../models/event.models');
+const activityEmitter = require('../helpers/activityEmitter');
 
 // Get user details by ID
 router.get('/:id', async (req, res) => {
@@ -59,15 +60,15 @@ router.get('/:id/eventsCreated', async (req, res) => {
   }
 });
 
+// Get events for a specific user based on their role (volunteer or NGO)
+// This route will return events based on the user's role and the query parameters provided
 router.get('/:id/myEvents', async (req, res) => {
   try {
     const { q, startDate, endDate } = req.query;
     const userId = req.params.id;
 
-    // Initialize an empty array for user events
     let userEvents = [];
 
-    // Fetch the user and get their events
     if (userId) {
       const user = await User.findById(userId);
       
@@ -134,6 +135,8 @@ router.put('/:id/edit', auth, async (req, res) => {
       runValidators: true
     });
 
+    activityEmitter.emit('user-edit', { userId: req.params.id, changes: updates });
+
     if (!updatedUser) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -177,6 +180,8 @@ router.delete('/:id', auth, async (req, res) => {
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
+
+    activityEmitter.emit('user-delete', { userId: req.params.id });
 
     res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
