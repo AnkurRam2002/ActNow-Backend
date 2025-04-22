@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user.models');
 const { sendEmail } = require('../helpers/emailService');
 const activityEmitter = require('../helpers/activityEmitter');
+const auth = require('../helpers/authMiddleware');
 
 // User registration endpoint
 router.post('/register', async (req, res) => {
@@ -20,6 +21,9 @@ router.post('/register', async (req, res) => {
             skills: Array.isArray(skills) ? skills : skills ? [skills] : []
         });
         await user.save();
+
+        activityEmitter.emit('user-register', { userId: user._id, email });
+
         await sendEmail(email, "Welcome to ActNow", `Hello ${username},\n\nThank you for registering on our platform. We're excited to have you on board.\n\nBest Wishes,\nActNow Team`);
         res.status(201).json({ message: 'User registered successfully' });
     } catch (error) {
@@ -39,8 +43,6 @@ router.post('/login', async (req, res) => {
         }
         
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '24h' });
-
-        console.log('Emitting user-login event for userId:', user._id);
         
         activityEmitter.emit('user-login', { userId: user._id });
 
@@ -57,8 +59,11 @@ router.post('/login', async (req, res) => {
 });
 
 // User logout endpoint
-router.post('/logout', async (req, res) => {
+router.post('/logout', auth, async (req, res) => {
     try {
+
+        activityEmitter.emit('user-logout', { userId: req.user.userId });
+
         return res.status(200).json({
             success: true,
             message: "Logged Out Successfully"
