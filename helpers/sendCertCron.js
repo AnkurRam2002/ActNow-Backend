@@ -37,7 +37,8 @@ cron.schedule("*/60 * * * *", async () => {
          if (!completedEvents.some(completedId => completedId.equals(eventId))) {
            const event = await Event.findById(eventId);
 
-           if (event.status === "Completed") {
+           // Check if event status is "Completed" and if the user is in the "volunteersPresent" array
+           if (event.status === "Completed" && event.volunteersPresent.includes(user._id.toString())) {
              completedEvents.push(eventId);
              newlyCompletedEvents.push(event);
            }
