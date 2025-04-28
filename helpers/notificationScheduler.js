@@ -14,7 +14,7 @@ webpush.setVapidDetails(
 let isJobRunning = false;
 
 // ✅ Run every day at 11 AM server time
-cron.schedule('* * * * *', async () => {
+cron.schedule('0 11 * * *', async () => {
   // Prevent overlapping job execution
   if (isJobRunning) {
     console.log("Notification job already in progress. Skipping this run.");
