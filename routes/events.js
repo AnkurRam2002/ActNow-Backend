@@ -48,6 +48,22 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Route to count all events
+router.get('/events-count', async (req, res) => {
+  try {
+    const eventCount = await Event.countDocuments();  // Count all event
+    const completedEventCount = await Event.countDocuments({ status: 'Completed' });  // Count completed events
+    res.json({ 
+      count: eventCount,
+      completedEvents: completedEventCount 
+    });
+    
+  } catch (error) {
+    console.error("Error counting events:", error);
+    res.status(500).json({ message: "Error counting events" });
+  }
+});
+
 // Get event by id
 router.get("/:id", async (req, res) => {
   try {

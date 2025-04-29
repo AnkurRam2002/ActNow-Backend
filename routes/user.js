@@ -5,6 +5,17 @@ const auth = require('../helpers/authMiddleware');
 const Event = require('../models/event.models');
 const activityEmitter = require('../helpers/activityEmitter');
 
+// Route to count all users
+router.get('/users-count', async (req, res) => {
+  try {
+    const userCount = await User.countDocuments();  // Count all event documents
+    res.json({ count: userCount });
+  } catch (error) {
+    console.error("Error counting users:", error);
+    res.status(500).json({ message: "Error counting users" });
+  }
+});
+
 // Get user details by ID
 router.get('/:id', async (req, res) => {
   try {
