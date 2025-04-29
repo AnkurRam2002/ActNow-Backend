@@ -57,6 +57,11 @@ userSchema.pre('save', function (next) {
     this.eventsCompleted = undefined; // Remove for NGO users
   } else if (this.role === 'volunteer') {
     this.eventsCreated = undefined; // Remove for volunteer users
+  } else if (this.role === 'admin') {
+    this.eventsRegistered = undefined;
+    this.eventsCompleted = undefined;
+    this.eventsCreated = undefined;
+    this.skills = undefined;
   }
   next();
 });
