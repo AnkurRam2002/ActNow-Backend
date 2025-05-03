@@ -5,6 +5,9 @@ const auth = require("../helpers/authMiddleware");
 const User = require("../models/user.models");
 const webpush = require("web-push");
 const activityEmitter = require("../helpers/activityEmitter");
+const { sendAttachmentEmail } = require("../helpers/emailService");
+const generateCertificate = require("../helpers/generateCertificate");
+const fs = require("fs");
 
 // Get all events
 router.get("/", async (req, res) => {
@@ -356,6 +359,21 @@ router.post("/:id/toggle-attendance", auth, async (req, res) => {
       volunteersPresent: event.volunteersPresent,
     });
 
+// Send Certificate Email
+    try {
+        const user = await User.findById(volunteerId);
+        if (!user) return res.status(404).json({ error: "User not found." });
+         // Generate PDF Certificate 
+        const pdfPath = await generateCertificate(user.username, event);
+    
+        // Send Email
+        await sendAttachmentEmail(user.email, pdfPath, event);
+    
+        // Remove temp file after sending email
+        fs.unlinkSync(pdfPath);
+        } catch (emailError) {
+          console.error(`Error processing event ${event.name} for ${user.username}:`, emailError);
+        }
   } catch (error) {
     console.error("Error toggling attendance:", error);
     res.status(500).json({ error: "Internal Server Error" });
