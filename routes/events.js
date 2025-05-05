@@ -352,20 +352,18 @@ router.post("/:id/toggle-attendance", auth, async (req, res) => {
     });
 
 // Send Certificate Email
+    let user;
     try {
-        const user = await User.findById(volunteerId);
-        if (!user) return res.status(404).json({ error: "User not found." });
-         // Generate PDF Certificate 
-        const pdfPath = await generateCertificate(user.username, event);
-    
-        // Send Email
-        await sendAttachmentEmail(user.email, pdfPath, event);
-    
-        // Remove temp file after sending email
-        fs.unlinkSync(pdfPath);
-        } catch (emailError) {
-          console.error(`Error processing event ${event.name} for ${user.username}:`, emailError);
-        }
+      user = await User.findById(volunteerId);
+      if (!user) return res.status(404).json({ error: "User not found." });
+
+      const pdfPath = await generateCertificate(user.username, event);
+      await sendAttachmentEmail(user.email, pdfPath, event);
+      fs.unlinkSync(pdfPath);
+
+    } catch (emailError) {
+      console.error(`Error processing event ${event.name} for ${user ? user.username : 'volunteer ID: ' + volunteerId}`, emailError);
+    }
   } catch (error) {
     console.error("Error toggling attendance:", error);
     res.status(500).json({ error: "Internal Server Error" });
