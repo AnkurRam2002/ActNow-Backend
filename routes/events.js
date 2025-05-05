@@ -141,8 +141,17 @@ router.put("/:id/edit", auth, async (req, res) => {
       ? [requiredSkills]
       : [];
 
+    // Fetch the user from the DB to get their role
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(401).json({ error: "Unauthorized user" });
+
+    const query =
+      user.role === "admin"
+        ? { _id: req.params.id }
+        : { _id: req.params.id, organizer: req.user.userId };
+
     const event = await Event.findOneAndUpdate(
-      { _id: req.params.id, organizer: req.user.userId },
+      query,
       {
         name,
         description,
@@ -159,7 +168,10 @@ router.put("/:id/edit", auth, async (req, res) => {
         .status(404)
         .json({ error: "Event not found or unauthorized." });
 
-    activityEmitter.emit("event-edit", { userId: req.user.userId, eventName: event.name });
+    activityEmitter.emit("event-edit", {
+      userId: req.user.userId,
+      eventName: event.name,
+    });
 
     res.status(200).json(event);
   } catch (error) {
