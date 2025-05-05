@@ -48,6 +48,10 @@ const userSchema = new mongoose.Schema({
         p256dh: String,
         auth: String
       }
+    },
+    idPdf: {
+      type: String,
+      default: null
     }
   }, { timestamps: true });
 
