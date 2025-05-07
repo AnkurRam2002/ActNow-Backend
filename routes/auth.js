@@ -2,34 +2,35 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const PendingRegistration = require('../models/pending.model');
 const User = require('../models/user.models');
-const { sendEmail } = require('../helpers/emailService');
+const upload = require('../helpers/multerConfig'); 
 const activityEmitter = require('../helpers/activityEmitter');
 const auth = require('../helpers/authMiddleware');
 
-// User registration endpoint
-router.post('/register', async (req, res) => {
-    const { username, email, password, phone, city, role, skills } = req.body;
+// User registration request to be approved by admin
+router.post('/register', upload.single('idPdf'), async (req, res) => {
     try {
-        const user = new User({ 
-            username, 
-            email, 
-            password, 
-            phoneNumber: phone, 
-            city,
-            role,
-            skills: Array.isArray(skills) ? skills : skills ? [skills] : []
-        });
-        await user.save();
-
-        activityEmitter.emit('user-register', { userId: user._id, email });
-
-        await sendEmail(email, "Welcome to ActNow", `Hello ${username},\n\nThank you for registering on our platform. We're excited to have you on board.\n\nBest Wishes,\nActNow Team`);
-        res.status(201).json({ message: 'User registered successfully' });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+      const { username, email, password, role, phoneNumber, skills, city } = req.body;
+  
+      const newPending = new PendingRegistration({
+        username,
+        email,
+        password,
+        role,
+        phoneNumber,
+        skills: Array.isArray(skills) ? skills : skills ? [skills] : [],
+        city,
+        idPdf: req.file.path
+      });
+  
+      await newPending.save();
+  
+      res.json({ message: 'Registration submitted for approval!' });
+    } catch (err) {
+      res.status(500).json({ error: err.message });
     }
-});
+  });
 
 
 // User login endpoint

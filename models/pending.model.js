@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose");
 
 const pendingSchema = new mongoose.Schema({
   username: {
@@ -31,4 +31,4 @@ const pendingSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
-export default mongoose.model("Pending", pendingSchema);
+module.exports = mongoose.model("Pending", pendingSchema);

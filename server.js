@@ -23,14 +23,20 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use('/uploads', express.static('uploads'));
+
 // Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api", passRoutes);
-app.use("/api", chatbotRoutes);
+app.use("/api/pass", passRoutes);
+app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/push", pushRoutes);
 app.use("/api/admin", adminRoutes);
+
+app.get('/api/health', (req, res) => {
+  res.status(200).send('OK');
+}); // Health check endpoint
 
 // Connect to MongoDB Atlas
 mongoose
