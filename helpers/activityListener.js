@@ -71,6 +71,20 @@ activityEmitter.on('user-delete', async ({ userId }) => {
   }
 });
 
+//User Donate
+activityEmitter.on('user-donate', async ({ userId, amount, ngoName }) => {
+  try {
+    const activity = await Activity.create({
+      action: 'user-donate',
+      user: userId,
+      metadata: { amount, ngoName }
+    });
+    console.log(`✅ Activity Logged: user-donate for user ${userId}`, activity);
+  } catch (error) {
+    console.error('❌ Error logging activity:', error.message);
+  }
+});
+
 //Event Create
 activityEmitter.on('event-create', async ({ userId, eventName }) => {
   try {

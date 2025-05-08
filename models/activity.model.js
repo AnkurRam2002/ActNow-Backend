@@ -13,6 +13,7 @@ const activitySchema = new mongoose.Schema({
            'user-logout',
            'user-edit',
            'user-delete',
+           'user-donate',
           ],
     default: null,
     required: true

@@ -6,6 +6,8 @@ const path = require("path");
 const router = express.Router();
 const generateReceipt = require("../helpers/generateReceipt");
 const { sendReceiptEmail } = require("../helpers/emailService");
+const activityEmitter = require("../helpers/activityEmitter");
+const auth = require("../helpers/authMiddleware");
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID, // store in .env
@@ -64,7 +66,7 @@ router.post("/verify", async (req, res) => {
   }
 });
 
-router.post("/generate-receipt", async (req, res) => {
+router.post("/generate-receipt", auth, async (req, res) => {
   const { name, email, amount, paymentId, ngoName } = req.body;
 
   try {
@@ -80,6 +82,12 @@ router.post("/generate-receipt", async (req, res) => {
 
     const receiptName = path.basename(receiptPath);
     console.log(receiptName)
+
+    activityEmitter.emit("user-donate", {
+      userId: req.user.userId,
+      amount,
+      ngoName
+    });
 
     return res.status(200).json({ status: "success", receiptName });
   } catch (err) {
