@@ -11,14 +11,14 @@ const auth = require('../helpers/authMiddleware');
 // User registration request to be approved by admin
 router.post('/register', upload.single('idPdf'), async (req, res) => {
     try {
-      const { username, email, password, role, phoneNumber, skills, city } = req.body;
+      const { username, email, password, role, phone, skills, city } = req.body;
   
       const newPending = new PendingRegistration({
         username,
         email,
         password,
         role,
-        phoneNumber,
+        phoneNumber: phone,
         skills: Array.isArray(skills) ? skills : skills ? [skills] : [],
         city,
         idPdf: req.file.path
