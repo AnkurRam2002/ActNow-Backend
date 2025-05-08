@@ -10,6 +10,14 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+const transporter2 = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.RECEIPT_EMAIL_USER,
+    pass: process.env.RECEIPT_EMAIL_PASS,
+  },
+});
+
 // Function to send email
 const sendEmail = async (to, subject, text) => {
   try {
@@ -49,4 +57,27 @@ const sendAttachmentEmail = async (to, pdfPath, event) => {
   }
 };
 
-module.exports = { sendEmail, sendAttachmentEmail };
+// Function to send receipt email
+const sendReceiptEmail = async (to, receiptPath, name, amount) => {
+  try {
+    const info = await transporter2.sendMail({
+      from: `"ActNow Support Team" <${process.env.EMAIL_USER}>`,
+      to,
+      subject: `Thank You for Your Donation, ${name}!`,
+      text: `Dear ${name},\n\nThank you for your generous donation of ₹${amount}. Please find your donation receipt attached.\n\nBest Regards,\nActNow Support Team`,
+      attachments: [
+        {
+          filename: `Donation_Receipt_${name}.pdf`,
+          path: receiptPath,
+          contentType: "application/pdf",
+        },
+      ],
+    });
+
+    console.log(`Receipt email sent to ${to}: `, info.response);
+  } catch (error) {
+    console.error("Error sending receipt email: ", error);
+  }
+};
+
+module.exports = { sendEmail, sendAttachmentEmail, sendReceiptEmail };

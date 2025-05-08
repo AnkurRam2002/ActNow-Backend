@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require('path');
 
 require("dotenv").config();
 require("./helpers/sendCertCron");
@@ -16,6 +17,7 @@ const passRoutes = require("./routes/pass");
 const chatbotRoutes = require("./routes/chatbot");
 const pushRoutes = require("./routes/pushrouter");
 const adminRoutes = require("./routes/admin");
+const paymentRoutes = require('./routes/payment');
 
 const app = express();
 
@@ -33,6 +35,8 @@ app.use("/api/pass", passRoutes);
 app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/push", pushRoutes);
 app.use("/api/admin", adminRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use("/receipts", express.static(path.join(__dirname, 'helpers', "receipts")));
 
 app.get('/api/health', (req, res) => {
   res.status(200).send('OK');
