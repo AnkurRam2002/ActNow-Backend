@@ -30,12 +30,12 @@ activityEmitter.on('user-logout', async ({ userId }) => {
 });
 
 //User Registration
-activityEmitter.on('user-register', async ({ userId, email }) => {
+activityEmitter.on('user-register', async ({ userId, email, role }) => {
   try {
     const activity = await Activity.create({
       action: 'user-register',
       user: userId,
-      metadata: { email }
+      metadata: { email, role }
     });
     console.log(`✅ Activity Logged: user-register for user ${userId}`, activity);
   } catch (error) {

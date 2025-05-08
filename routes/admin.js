@@ -4,6 +4,7 @@ const PendingRegistration = require('../models/pending.model');
 const User = require('../models/user.models'); 
 const router = express.Router();
 const { sendEmail } = require('../helpers/emailService');
+const activityEmitter = require('../helpers/activityEmitter');
 
 router.get('/activities', async (req, res) => {
   try {
@@ -49,6 +50,12 @@ router.post('/approve/:id', async (req, res) => {
 
     await newUser.save();
     await pending.deleteOne();
+
+    activityEmitter.emit('user-register', {
+      userId: newUser._id,
+      email: newUser.email,
+      role: newUser.role
+    });
 
     // Send email to user about approval
     const emailContent = `Hello ${pending.username},\n\nYour registration has been approved. You can now log in to the system.\n\nBest regards,\nAdmin Team`;
