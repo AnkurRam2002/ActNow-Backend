@@ -7,7 +7,7 @@ require("dotenv").config();
 require("./helpers/sendCertCron");
 require("./helpers/eventStatusCron");
 require("./helpers/activityListener");
-require('./helpers/notificationScheduler');
+require('./helpers/notificationSchedulerCron');
 
 // Import Routes
 const authRoutes = require("./routes/auth");
