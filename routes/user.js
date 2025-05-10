@@ -127,8 +127,14 @@ router.get('/:id/myEvents', async (req, res) => {
 // Update user profile
 router.put('/:id/edit', auth, async (req, res) => {
   try {
-    // Make sure only the logged-in user can edit their profile
-    if (req.user.userId !== req.params.id) {
+    // Fetch the user from the DB to get their role
+    const user = await User.findById(req.user.userId); // Assuming req.user.userId contains the userId from JWT
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized user' });
+    }
+
+    // Make sure only the logged-in user and admin can edit their profile
+    if (req.user.userId !== req.params.id && user.role !== 'admin') {
       return res.status(403).json({ error: 'Unauthorized to edit this user profile.' });
     }
 
