@@ -182,10 +182,16 @@ router.put("/:id/edit", auth, async (req, res) => {
 // Delete event
 router.delete("/:id", auth, async (req, res) => {
   try {
-    const event = await Event.findOneAndDelete({
-      _id: req.params.id,
-      organizer: req.user.userId,
-    });
+    // Fetch the user from the DB to get their role
+    const user = await User.findById(req.user.userId);
+    if (!user) return res.status(401).json({ error: "Unauthorized user" });
+
+    const query =
+      user.role === "admin"
+        ? { _id: req.params.id }
+        : { _id: req.params.id, organizer: req.user.userId };
+
+    const event = await Event.findOneAndDelete(query);
 
     if (!event)
       return res
