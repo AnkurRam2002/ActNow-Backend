@@ -168,7 +168,13 @@ router.put('/:id/edit', auth, async (req, res) => {
 // Delete user profile
 router.delete('/:id', auth, async (req, res) => {
   try {
-    if (req.user.userId !== req.params.id) {
+    // Fetch the user from the DB to get their role
+    const loggedInUser = await User.findById(req.user.userId); // Assuming req.user.userId contains the userId from JWT
+    if (!loggedInUser) {
+      return res.status(401).json({ error: 'Unauthorized user' });
+    }
+
+    if (req.user.userId !== req.params.id && loggedInUser.role !== 'admin') {
       return res.status(403).json({ error: 'Unauthorized to delete this user profile.' });
     }
 
