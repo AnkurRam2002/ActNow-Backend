@@ -12,6 +12,11 @@ const auth = require('../helpers/authMiddleware');
 router.post('/register', upload.single('idPdf'), async (req, res) => {
     try {
       const { username, email, password, role, phone, skills, city } = req.body;
+
+      const existingUser = await User.find({ email });
+      if (existingUser.length > 0) {
+        return res.status(400).json({ message: 'Email already exists' });
+      }
   
       const newPending = new PendingRegistration({
         username,
