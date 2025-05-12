@@ -62,7 +62,7 @@ const generateReceipt = ({ name, email, amount, paymentId, ngoName }) => {
         .text(`Donated To: ${ngoName}`)
         .text(`Amount Donated: Rs. ${amount.toFixed(2)}`)
         .text(`Payment ID: ${paymentId}`)
-        .text(`Date: ${new Date().toLocaleString()}`)
+        .text(`Date: ${new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" })}`)
         .moveDown(2);
 
       // Line Separator

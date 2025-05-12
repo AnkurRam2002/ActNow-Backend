@@ -78,7 +78,7 @@ router.post("/generate-receipt", auth, async (req, res) => {
       ngoName,
     });
 
-    await sendReceiptEmail('ayushimoitra03@gmail.com', receiptPath, name, amount);
+    await sendReceiptEmail(email, receiptPath, name, amount);
 
     const receiptName = path.basename(receiptPath);
     console.log(receiptName)
