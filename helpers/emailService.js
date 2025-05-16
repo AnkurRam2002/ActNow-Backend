@@ -58,7 +58,7 @@ const sendAttachmentEmail = async (to, pdfPath, event) => {
 };
 
 // Function to send receipt email
-const sendReceiptEmail = async (to, receiptPath, name, amount) => {
+const sendReceiptEmailDonor = async (to, receiptPath, name, amount) => {
   try {
     const info = await transporter2.sendMail({
       from: `"ActNow Support Team" <${process.env.EMAIL_USER}>`,
@@ -80,4 +80,26 @@ const sendReceiptEmail = async (to, receiptPath, name, amount) => {
   }
 };
 
-module.exports = { sendEmail, sendAttachmentEmail, sendReceiptEmail };
+const sendReceiptEmailNgo = async (to, receiptPath, name, amount, donor) => {
+  try {
+    const info = await transporter2.sendMail({
+      from: `"ActNow Support Team" <${process.env.EMAIL_USER}>`,
+      to,
+      subject: `You received a donation!`,
+      text: `Dear ${name},\n\nCongratulations! You received a generous donation of ₹${amount} from ${donor}. Please find your donation receipt attached.\n\nBest Regards,\nActNow Support Team`,
+      attachments: [
+        {
+          filename: `Donation_Receipt_${name}.pdf`,
+          path: receiptPath,
+          contentType: "application/pdf",
+        },
+      ],
+    });
+
+    console.log(`Receipt email sent to ${to}: `, info.response);
+  } catch (error) {
+    console.error("Error sending receipt email: ", error);
+  }
+};
+
+module.exports = { sendEmail, sendAttachmentEmail, sendReceiptEmailDonor, sendReceiptEmailNgo };

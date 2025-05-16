@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const path = require("path");
 const router = express.Router();
 const generateReceipt = require("../helpers/generateReceipt");
-const { sendReceiptEmail } = require("../helpers/emailService");
+const { sendReceiptEmailDonor, sendReceiptEmailNgo } = require("../helpers/emailService");
 const activityEmitter = require("../helpers/activityEmitter");
 const auth = require("../helpers/authMiddleware");
 
@@ -67,7 +67,7 @@ router.post("/verify", async (req, res) => {
 });
 
 router.post("/generate-receipt", auth, async (req, res) => {
-  const { name, email, amount, paymentId, ngoName } = req.body;
+  const { name, email, amount, paymentId, ngoName, ngoEmail } = req.body;
 
   try {
     const receiptPath = await generateReceipt({
@@ -78,7 +78,8 @@ router.post("/generate-receipt", auth, async (req, res) => {
       ngoName,
     });
 
-    await sendReceiptEmail(email, receiptPath, name, amount);
+    await sendReceiptEmailDonor(email, receiptPath, name, amount);
+    await sendReceiptEmailNgo(ngoEmail, receiptPath, ngoName, amount, name)
 
     const receiptName = path.basename(receiptPath);
     console.log(receiptName)
