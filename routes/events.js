@@ -336,8 +336,12 @@ router.post("/:id/toggle-attendance", auth, async (req, res) => {
       return res.status(404).json({ error: "Event not found." });
     }
 
-    // Ensure that only the event organizer can modify attendance
-    if (event.organizer.toString() !== ngoId) {
+    // Fetch the user from the DB to get their role
+    const loggedInUser = await User.findById(req.user.userId);
+    if (!loggedInUser) return res.status(401).json({ error: "Unauthorized user" })
+
+    // Ensure that only the event organizer and admin can modify attendance
+    if (event.organizer.toString() !== ngoId && loggedInUser.role !== 'admin') {
       return res.status(403).json({ error: "You are not authorized to modify this event." });
     }
 
