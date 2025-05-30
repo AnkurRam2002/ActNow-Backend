@@ -18,6 +18,7 @@ const chatbotRoutes = require("./routes/chatbot");
 const pushRoutes = require("./routes/pushrouter");
 const adminRoutes = require("./routes/admin");
 const paymentRoutes = require('./routes/payment');
+const healthRoutes = require("./routes/health");
 
 const app = express();
 
@@ -36,11 +37,10 @@ app.use("/api/chatbot", chatbotRoutes);
 app.use("/api/push", pushRoutes);
 app.use("/api/admin", adminRoutes);
 app.use('/api/payment', paymentRoutes);
-app.use("/receipts", express.static(path.join(__dirname, 'helpers', "receipts")));
+app.use("/api/health", healthRoutes);
 
-app.get('/api/health', (req, res) => {
-  res.status(200).send('OK');
-}); // Health check endpoint
+// Serve static files for receipts
+app.use("/receipts", express.static(path.join(__dirname, 'helpers', "receipts")));
 
 // Connect to MongoDB Atlas
 mongoose
