@@ -58,12 +58,12 @@ activityEmitter.on('user-edit', async ({ userId, changes }) => {
 });
 
 //User Delete
-activityEmitter.on('user-delete', async ({ userId }) => {
+activityEmitter.on('user-delete', async ({ userId, deletedUser }) => {
   try {
     const activity = await Activity.create({
       action: 'user-delete',
       user: userId,
-      metadata: {}
+      metadata: { deletedUser }
     });
     console.log(`✅ Activity Logged: user-delete for user ${userId}`, activity);
   } catch (error) {
