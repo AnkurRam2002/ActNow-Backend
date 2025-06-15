@@ -9,7 +9,7 @@ const getOnlyDate = (date) => {
 
 let isJobRunning = false;
 
-cron.schedule('0 * * * *', async () => {
+cron.schedule('* * * * *', async () => {
 
   if (isJobRunning) {
     console.log("Job already in progress. Skipping this run.");
