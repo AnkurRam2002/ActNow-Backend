@@ -225,9 +225,13 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 This project is licensed under the ISC License.
 
-## 👨‍💻 Author
+## 👥 Contributors
 
-**Ankur Ram**
+- **Ankur Ram**
+- **Ayushi Moitra**
+- **Bitas Maiti**
+- **Ishita Dutta**
+- **Sarbajit Paul**
 
 ## 🙏 Acknowledgments
 
